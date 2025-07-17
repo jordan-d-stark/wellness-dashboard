@@ -1,46 +1,17 @@
 import { WellnessData } from '../types';
-
-// Types for Exist.io API responses
-interface ExistAttribute {
-  id: number;
-  name: string;
-  value: number;
-  date: string;
-  group: string;
-}
-
-interface ExistApiResponse {
-  attributes: ExistAttribute[];
-}
+import { config } from '../config';
 
 // API configuration
 const EXIST_API_BASE_URL = 'https://exist.io/api/1';
-const CORS_PROXY = 'https://thingproxy.freeboard.io/fetch/';
-const API_KEY = process.env.REACT_APP_EXIST_API_KEY;
-
-// Helper function to format date for API requests
-const formatDateForAPI = (date: Date): string => {
-  return date.toISOString().split('T')[0];
-};
-
-// Helper function to get date range for past 7 days
-const getDateRange = () => {
-  const endDate = new Date();
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 6);
-  
-  return {
-    start: formatDateForAPI(startDate),
-    end: formatDateForAPI(endDate),
-  };
-};
+const API_KEY = config.existApiKey;
 
 // Fetch wellness data from our backend server
 export const fetchWellnessData = async (): Promise<WellnessData> => {
   try {
     console.log('Fetching data from backend server...');
+    console.log('Backend URL:', config.backendUrl);
     
-    const response = await fetch('http://localhost:3001/api/wellness-data');
+    const response = await fetch(`${config.backendUrl}/api/wellness-data`);
     
     console.log('Backend response status:', response.status);
     

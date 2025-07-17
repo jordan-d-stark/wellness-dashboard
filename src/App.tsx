@@ -7,13 +7,12 @@ import { fetchWellnessData } from './services/existApi';
 import { WellnessData } from './types';
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [wellnessData, setWellnessData] = useState<WellnessData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const handleThemeToggle = (isDark: boolean) => {
-    setIsDarkMode(isDark);
+  const handleThemeToggle = (_isDark: boolean) => {
+    // Theme toggle functionality can be implemented here
   };
 
   useEffect(() => {
