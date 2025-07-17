@@ -2,7 +2,7 @@
   "name": "wellness-dashboard",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://YOUR_USERNAME.github.io/wellness-dashboard",
+  "homepage": "https://jordan-d-stark.github.io/wellness-dashboard",
   "dependencies": {
     "@types/node": "^16.18.0",
     "@types/react": "^18.2.0",
