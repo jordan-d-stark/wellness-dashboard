@@ -7,19 +7,55 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Get the base URL for the current environment
+const getBaseUrl = () => {
+  if (process.env.RAILWAY_STATIC_URL) {
+    return process.env.RAILWAY_STATIC_URL;
+  }
+  if (process.env.RAILWAY_PUBLIC_DOMAIN) {
+    return `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`;
+  }
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.BASE_URL || 'https://your-app-name.railway.app';
+  }
+  return 'http://localhost:3001';
+};
+
+const BASE_URL = getBaseUrl();
+
 // OAuth2 Configuration
 const OAUTH_CONFIG = {
   clientId: process.env.EXIST_CLIENT_ID,
   clientSecret: process.env.EXIST_CLIENT_SECRET,
-  redirectUri: 'http://localhost:3001/auth/callback',
+  redirectUri: `${BASE_URL}/auth/callback`,
   authorizationUrl: 'https://exist.io/oauth2/authorize',
   tokenUrl: 'https://exist.io/oauth2/access_token',
   scopes: 'activity_read+productivity_read+mood_read+sleep_read'
 };
 
 // Enable CORS for React app
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001', 
+  'http://localhost:3002',
+  'http://localhost:3003',
+  'https://jordan-d-stark.github.io',
+  BASE_URL
+].filter(Boolean); // Remove any undefined values
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003']
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 }));
 
 app.use(express.json());
@@ -49,11 +85,11 @@ app.get('/auth/callback', async (req, res) => {
 
   if (error) {
     console.error('OAuth2 error:', error);
-    return res.redirect('http://localhost:3002?error=' + encodeURIComponent(error));
+    return res.redirect(`${BASE_URL}?error=${encodeURIComponent(error)}`);
   }
 
   if (!code) {
-    return res.redirect('http://localhost:3002?error=' + encodeURIComponent('No authorization code received'));
+    return res.redirect(`${BASE_URL}?error=${encodeURIComponent('No authorization code received')}`);
   }
 
   try {
@@ -76,7 +112,7 @@ app.get('/auth/callback', async (req, res) => {
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
       console.error('Token exchange failed:', tokenResponse.status, errorText);
-      return res.redirect('http://localhost:3002?error=' + encodeURIComponent('Token exchange failed'));
+      return res.redirect(`${BASE_URL}?error=${encodeURIComponent('Token exchange failed')}`);
     }
 
     const tokenData = await tokenResponse.json();
@@ -87,11 +123,11 @@ app.get('/auth/callback', async (req, res) => {
     process.env.EXIST_ACCESS_TOKEN = tokenData.access_token;
     
     // Redirect back to the React app with success
-    res.redirect('http://localhost:3002?auth=success');
+    res.redirect(`${BASE_URL}?auth=success`);
     
   } catch (error) {
     console.error('Error during token exchange:', error);
-    res.redirect('http://localhost:3002?error=' + encodeURIComponent('Token exchange error'));
+    res.redirect(`${BASE_URL}?error=${encodeURIComponent('Token exchange error')}`);
   }
 });
 
