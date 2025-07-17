@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { config } from '../config';
 
 interface AuthStatus {
   authenticated: boolean;
@@ -18,7 +19,7 @@ const AuthButton: React.FC = () => {
   const checkAuthStatus = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3001/auth/status');
+      const response = await fetch(`${config.backendUrl}/auth/status`);
       if (response.ok) {
         const status = await response.json();
         setAuthStatus(status);
@@ -34,7 +35,7 @@ const AuthButton: React.FC = () => {
   };
 
   const handleOAuthLogin = () => {
-    window.location.href = 'http://localhost:3001/auth/authorize';
+    window.location.href = `${config.backendUrl}/auth/authorize`;
   };
 
   const handleLogout = async () => {
@@ -129,8 +130,8 @@ const AuthButton: React.FC = () => {
           <ol className="text-sm text-yellow-700 space-y-1 list-decimal list-inside">
             <li>Go to <a href="https://exist.io/account/apps/" target="_blank" rel="noopener noreferrer" className="underline">Exist.io Apps</a></li>
             <li>Create a new OAuth2 application</li>
-            <li>Set the redirect URI to: <code className="bg-yellow-100 px-1 rounded">http://localhost:3001/auth/callback</code></li>
-            <li>Add the client ID and secret to your .env file</li>
+            <li>Set the redirect URI to: <code className="bg-yellow-100 px-1 rounded">{config.backendUrl}/auth/callback</code></li>
+            <li>Add the client ID and secret to your Railway environment variables</li>
             <li>Click "Connect with Exist.io" above</li>
           </ol>
         </div>
