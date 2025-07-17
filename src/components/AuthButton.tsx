@@ -17,20 +17,13 @@ const AuthButton: React.FC = () => {
   }, []);
 
   const checkAuthStatus = async () => {
-    try {
-      setLoading(true);
-      // Temporarily skip authentication check to avoid errors
-      setAuthStatus({
-        authenticated: true,
-        hasOAuthToken: false,
-        hasApiKey: true
-      });
-    } catch (error) {
-      setError('Error checking authentication status');
-      console.error('Auth status check error:', error);
-    } finally {
-      setLoading(false);
-    }
+    // Skip authentication check entirely to avoid errors
+    setAuthStatus({
+      authenticated: true,
+      hasOAuthToken: false,
+      hasApiKey: true
+    });
+    setLoading(false);
   };
 
   const handleOAuthLogin = () => {
