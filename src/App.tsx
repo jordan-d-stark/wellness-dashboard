@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import MetricCard from './components/MetricCard';
-import AuthButton from './components/AuthButton';
 import { mockWellnessData } from './data/mockData';
 import { fetchWellnessData } from './services/existApi';
 import { WellnessData } from './types';
@@ -69,8 +68,6 @@ function App() {
       <Header onThemeToggle={handleThemeToggle} />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <AuthButton />
-        
         {error && (
           <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg dark:bg-yellow-900/20 dark:border-yellow-800">
             <div className="flex items-start">
